@@ -9,16 +9,17 @@ body {
     background-position:50%;
 }
 .body{
-/*display:flex;*/
+display:flex;
 }
 .title{
     font-weight:bold;
-    position: absolute;
     font-size:2em;
     margin: auto;
     padding: 0;
     display:block;
-    text-align:center;
+    text-align:left;
+    float:left
+    */
 }
 .posicion1{
 /*margin-left:50px;
@@ -28,17 +29,45 @@ width:auto;
 float:center;
 border:#000000 4px solid;
 */
+background-color: orange;
 }
 #canvas{
     padding: 0;
     margin: auto;
-    display: block;
-    /*width: 800px;
-    height: 600px;*/
-    position: absolute;
+    /*display: block;*/
+    position: relative;
+    float:center
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     border:#000000 4px solid;
+}
+.info{
+    position:relative;
+    float:right;
+    padding:10px;
+}
+
+.boton {
+  min-width: 130px;
+  height: 40px;
+  color: #fff;
+  padding: 5px 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  outline: none;
+  border-radius: 5px;
+  border: none;
+  background-size: 120% auto;
+  background-image: linear-gradient(315deg, #833ab4 0%, #fd1d1d 50%, #fcb045);
+}
+.boton {
+  background-position: right center;
+}
+.boton {
+  top: 2px;
 }

@@ -19,7 +19,10 @@ var anchoAltoCuadrado = 10
 var distancia=3
 //velocidad del juego (milisegundos):
 var velocidad=1000
+//indicador de la pausa del juego:
+var juegoPausado = false
 var tetromino = []
+
 //coordenadas de la pieza del usuario (modificables por el usuario mediante teclado):
 var coorUsuario = {
 x:5,
@@ -141,6 +144,7 @@ function tetrominoACuadricula(tetrominoElegido,coordenadaX,coordenadaY){
 }
 //la función tiempo redibuja el tetrominó en su nueva posición
 function tiempo(){
+    //cambioColor()
     let ubicacionY = coorUsuario.y*(anchoAltoCuadrado+distancia)
     //si el tetromino está por encima del fondo del lienzo y bajo el tetromino no hay otro:
     if(ubicacionY<=altoLienzo && !colisionFinal(tetromino,coorUsuario.x,coorUsuario.y)){ //&& cuadricula[coorUsuario.y+tetromino.length][coorUsuario.x]!=2
@@ -264,30 +268,32 @@ function accionJugador(direccion){
 //controles
 document.addEventListener("keydown",event => {
     let direccion=0
-    //si se pulsa la flecha abajo:
-    if(event.keyCode===40){
-        if(!colisionLateral(direccion)){
-            accionJugador(direccion)
+    if(!juegoPausado){
+        //si se pulsa la flecha abajo:
+        if(event.keyCode===40){
+            if(!colisionLateral(direccion)){
+                accionJugador(direccion)
+            }
         }
-    }
-    //si se pulsa la izquierda:
-    else if(event.keyCode===37){
-        direccion=-1
-        //colisiónLateral analiza, antes de permitir el movimiento lateral del jugador, que sea posible
-        //sin salirse del canvas (si no hay colisión lateral, se permitirá el movimiento):
-        if(!colisionLateral(direccion)){
-            accionJugador(direccion)
+        //si se pulsa la izquierda:
+        else if(event.keyCode===37){
+            direccion=-1
+            //colisiónLateral analiza, antes de permitir el movimiento lateral del jugador, que sea posible
+            //sin salirse del canvas (si no hay colisión lateral, se permitirá el movimiento):
+            if(!colisionLateral(direccion)){
+                accionJugador(direccion)
+            }
         }
-    }
-    //si se pulsa la derecha:
-    else if(event.keyCode===39){
-        direccion=1
-        if(!colisionLateral(direccion)){
-            accionJugador(direccion)
+        //si se pulsa la derecha:
+        else if(event.keyCode===39){
+            direccion=1
+            if(!colisionLateral(direccion)){
+                accionJugador(direccion)
+            }
         }
-    }
-    else if(event.keyCode===32){
-        rotarTetromino()
+        else if(event.keyCode===32){
+            rotarTetromino()
+        }
     }
 })
 function rotarTetromino(){
@@ -305,11 +311,64 @@ crearCuadricula()
 tetromino=nuevaPieza()
 tetrominoACuadricula(tetromino,coorUsuario.x,coorUsuario.y)
 dibujar()
+
+function reinicio(){
+    //ponemos los valores de la cuadricula a '0'
+    limpiarCuadricula()
+    //reiniciamos la velocidad:
+    velocidad=1000
+    //llamamos a una nueva pieza:
+    tetromino=nuevaPieza()
+    //pasamos los valores de la pieza a la cuadrícula:
+    tetrominoACuadricula(tetromino,coorUsuario.x,coorUsuario.y)
+    //pintamos la cuadricula según sus valores:
+    dibujar()
+    // falta reiniciar la puntuación
+}
+//limpiarCuadricula reinicia los valores de los vectores de la Cuadricula
+//dándoles el valor por defecto ('0')
+function limpiarCuadricula(){
+    cuadricula.forEach((fila,y)=>{
+        fila.forEach((valor,x)=>{
+            fila[x]=0
+        })
+    })
+}
+function pausa(){
+    clearInterval(actualizar)
+    juegoPausado=true
+}
+function seguir(){
+    if(juegoPausado){
+        juegoPausado=false
+        actualizar=setInterval(tiempo,velocidad)
+}
+}
 //tetrominoACuadricula(tetromino,coorUsuario.x,coorUsuario.ytetromino,coorUsuario.x,coorUsuario.y)
 var actualizar = setInterval(tiempo,velocidad)
 
-var colorful = setInterval(cambioColor,100)
+function cambioColor(){
+    var p1 = Math.floor(Math.random() * (255 - 0 + 1));
+    var p2 = Math.floor(Math.random() * (255 - 0 + 1));
+    var p3 = Math.floor(Math.random() * (255 - 0 + 1));
+    var p4 = Math.floor(Math.random() * (255 - 0 + 1));
+    var grd = contexto.createLinearGradient(p1, p2, p3, p4);
+    var color = ['yellow', 'purple', 'green', 'blue', 'pink', 'white']
+    numeroRandom = Math.floor(Math.random() * 6);
+    grd.addColorStop(0, color[numeroRandom]);
+    numeroRandom = Math.floor(Math.random() * 6);
+    grd.addColorStop(0.5,color[numeroRandom]);
+    numeroRandom = Math.floor(Math.random() * 6);
+    grd.addColorStop(1, color[numeroRandom]);
+    contexto.fillStyle = grd;
+}
 
+//los tetrominos pueden convertirse en partes de una imagen que se va llenando como
+//un puzzle (incompatibilidad con la función cambioColor():
+//var img = document.getElementById("imagenTetromino");
+//var pat = contexto.createPattern(img,'repeat')
+//contexto.fillStyle=pat
+//contexto.fill()
 
 
 
