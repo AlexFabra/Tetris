@@ -1,0 +1,44 @@
+@charset "utf-8";
+body {
+    font: 14pt Verdana;
+    font-size: 2ex;
+    text-align:center;
+    background-image: url('fondo2.jpg');
+    /*background-color:E9A597;*/
+    background-size:cover;
+    background-position:50%;
+}
+.body{
+/*display:flex;*/
+}
+.title{
+    font-weight:bold;
+    position: absolute;
+    font-size:2em;
+    margin: auto;
+    padding: 0;
+    display:block;
+    text-align:center;
+}
+.posicion1{
+/*margin-left:50px;
+margin-right:25px;
+margin-top:30px;
+width:auto;
+float:center;
+border:#000000 4px solid;
+*/
+}
+#canvas{
+    padding: 0;
+    margin: auto;
+    display: block;
+    /*width: 800px;
+    height: 600px;*/
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border:#000000 4px solid;
+}
