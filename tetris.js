@@ -4,17 +4,17 @@ const lienzo = document.querySelector("canvas")
 //poner 2d es necesario, muestra que la animación será en 2d:
 const contexto = lienzo.getContext("2d")
 //variables de medida de la zona de juego del lienzo:
-var inicioAnchoLienzo = 6
-var inicioAltoLienzo = 4
-var anchoLienzo = lienzo.width-60//lienzo.style.width
-var altoLienzo = lienzo.height-60 //lienzo.style.height
+var INICIO_ALTO_LIENZO = 6
+var INICIO_ANCHO_LIENZO = 4 
+var ANCHO_LIENZO = lienzo.width-60//lienzo.style.width 
+var ALTO_LIENZO = lienzo.height-60 //lienzo.style.height
 var mitadAnchoLienzo = 45
 //variables y métodos para definir la cuadricula donde se dibujarán los tetrominós:
-var anchoCuadricula=14
-var altoCuadricula=30
-var cuadricula = crearCuadricula(anchoCuadricula,altoCuadricula)
+var ANCHO_CUADRICULA=14 
+var ALTO_CUADRICULA=30 
+var cuadricula = crearCuadricula(ANCHO_CUADRICULA,ALTO_CUADRICULA)
 //medida de los cuadrados que forman los tetrominós:
-var anchoAltoCuadrado = 10
+var ANCHO_ALTO_CUADRADO = 10
 //distancia entre cuadrados:
 var distancia=3
 //velocidad del juego (milisegundos):
@@ -84,22 +84,22 @@ function crearCuadricula(ancho,alto){
     return cuadricula
 }
 function dibujar(){
-    let coorX=inicioAnchoLienzo
-    let coorY=inicioAltoLienzo
-    for(let i=0;i<altoCuadricula;++i){
-        for(let x=0;x<anchoCuadricula;x++){
+    let coorX=INICIO_ALTO_LIENZO
+    let coorY=INICIO_ANCHO_LIENZO
+    for(let i=0;i<ALTO_CUADRICULA;++i){
+        for(let x=0;x<ANCHO_CUADRICULA;x++){
             if(cuadricula[i][x]!==0){
                 //la herramienta fillRect permite dibujar un rectángulo:
-                contexto.fillRect(coorX+distancia,coorY+distancia,anchoAltoCuadrado,anchoAltoCuadrado)
+                contexto.fillRect(coorX+distancia,coorY+distancia,ANCHO_ALTO_CUADRADO,ANCHO_ALTO_CUADRADO)
             }
             if(cuadricula[i][x]==0){
                 //la herramienta clearRect permite borrar un rectángulo:
-                contexto.clearRect(coorX+distancia,coorY+distancia,anchoAltoCuadrado,anchoAltoCuadrado)
+                contexto.clearRect(coorX+distancia,coorY+distancia,ANCHO_ALTO_CUADRADO,ANCHO_ALTO_CUADRADO)
             }
-            coorX+=anchoAltoCuadrado+distancia
+            coorX+=ANCHO_ALTO_CUADRADO+distancia
         }
-        coorX=inicioAnchoLienzo
-        coorY+=anchoAltoCuadrado+distancia
+        coorX=INICIO_ALTO_LIENZO
+        coorY+=ANCHO_ALTO_CUADRADO+distancia
     }
 }
 //limpiarMovimiento despeja el movimiento anterior de la pieza despejando los valores '1'
@@ -120,14 +120,13 @@ function tetrominoACuadricula(tetrominoElegido,coordenadaX,coordenadaY){
     let coorY=coordenadaY
     let coorXtetro = 0
     let coorYtetro = 0
-    for(let i=0;i<altoCuadricula;++i){
-        for(let x=0;x<anchoCuadricula;x++){
+    for(let i=0;i<ALTO_CUADRICULA;++i){
+        for(let x=0;x<ANCHO_CUADRICULA;x++){
             //si la ubicacion en la cuadricula (indicada por 'x' e 'i') es mayor o igual a la ubicacion de las coordenadas y si
             //dicha ubicación es menor a las posiciones finales del tetromino (tetromino.length) y tetromino[coorYtetro].length)...
             if(i>=coorY && x>=coorX && i<coorY+tElegido.length && x<coorX+tElegido[coorYtetro].length){
                 //si la coordenada de dentro del tetromino no tiene el valor '0':
                 if(tElegido[coorYtetro][coorXtetro]!=0){ //&& tElegido[coorYtetro][coorXtetro]!=2
-
                     cuadricula[i][x]=1
                 }
                 coorXtetro++
@@ -142,12 +141,12 @@ function tetrominoACuadricula(tetrominoElegido,coordenadaX,coordenadaY){
         }
     }
 }
-//la función tiempo redibuja el tetrominó en su nueva posición
+//la función tiempo reposiciona el tetromino
 function tiempo(){
     //cambioColor()
-    let ubicacionY = coorUsuario.y*(anchoAltoCuadrado+distancia)
+    let ubicacionY = coorUsuario.y*(ANCHO_ALTO_CUADRADO+distancia)
     //si el tetromino está por encima del fondo del lienzo y bajo el tetromino no hay otro:
-    if(ubicacionY<=altoLienzo && !colisionFinal(tetromino,coorUsuario.x,coorUsuario.y)){ //&& cuadricula[coorUsuario.y+tetromino.length][coorUsuario.x]!=2
+    if(ubicacionY<=ALTO_LIENZO && !colisionFinal(tetromino,coorUsuario.x,coorUsuario.y)){ //&& cuadricula[coorUsuario.y+tetromino.length][coorUsuario.x]!=2
         //borramos el movimiento anterior:
         limpiarMovimiento()
         //el paso del tiempo hace que el tetromino esté más abajo:
@@ -166,16 +165,16 @@ function tiempo(){
 }
 //colisionLateral gestiona las colisiones con la pared o con otros tetrominos
 function colisionLateral(direccion){
-    let ubicacionX = coorUsuario.x*(anchoAltoCuadrado+distancia)
-    let ubicacionY = coorUsuario.y*(anchoAltoCuadrado+distancia)
+    let ubicacionX = coorUsuario.x*(ANCHO_ALTO_CUADRADO+distancia)
+    let ubicacionY = coorUsuario.y*(ANCHO_ALTO_CUADRADO+distancia)
     //si las coordenadas del tetromino se ubican en el limite derecho y el usuario quiere ir a la derecha:
-    if(ubicacionX>anchoLienzo && direccion==1){
+    if(ubicacionX>ANCHO_LIENZO && direccion==1){
         return true
     //si las coordenadas se ubican en el límite izquierdo y el usuario quiere ir a la izquierda:
-    } else if (ubicacionX<inicioAnchoLienzo && direccion==-1){
+    } else if (ubicacionX<INICIO_ALTO_LIENZO && direccion==-1){
         return true
     //si las coordenadas se ubican en el fondo y el usuario quiere moverse hacia abajo:
-    } else if (ubicacionY>altoLienzo){
+    } else if (ubicacionY>ALTO_LIENZO){
         console.log("choque")
         return true
     } else {
@@ -189,14 +188,14 @@ function colisionFinal(tetrominoElegido,coordenadaX,coordenadaY){
     let coorXtetro = 0
     let coorYtetro = 0
     let colision = false
-    for(let i=0;i<altoCuadricula;++i){
-        for(let x=0;x<anchoCuadricula;x++){
+    for(let i=0;i<ALTO_CUADRICULA;++i){
+        for(let x=0;x<ANCHO_CUADRICULA;x++){
             //si la ubicacion en la cuadricula (indicada por 'x' e 'i') es mayor o igual a la ubicacion de las coordenadas y si
             //dicha ubicación es menor a las posiciones finales del tetromino (tetromino.length) y tetromino[coorYtetro].length)...
             if(i>=coorY && x>=coorX && i<coorY+tElegido.length && x<coorX+tElegido[coorYtetro].length){
                 //dado que los tetrominos anteriores, en la cuadricula tienen el valor '2', si se topa con uno,
-                //se entiende como colision. Para analizar si un cuadrado del tetromino ha topado con, las condiciones
-                //son que el valor de la coordenada del vector  del tetromino analizada sea 1, y que el proximo valor Y
+                //se entiende como colision. Para analizar si un cuadrado del tetromino ha topado con otro, las condiciones
+                //son que el valor de la coordenada del vector del tetromino analizada sea 1, y que el proximo valor Y
                 //de la coordenada del vector de la cuadricula sea 2.
                 if(tElegido[coorYtetro][coorXtetro]==1 && cuadricula[i+1][x]==2){
                     colision = true
@@ -225,8 +224,8 @@ function posicionFinal(tetrominoElegido,coordenadaX,coordenadaY){
     let coorY=coordenadaY
     let coorXtetro = 0
     let coorYtetro = 0
-    for(let i=0;i<altoCuadricula;++i){
-        for(let x=0;x<anchoCuadricula;x++){
+    for(let i=0;i<ALTO_CUADRICULA;++i){
+        for(let x=0;x<ANCHO_CUADRICULA;x++){
             //si la ubicacion en la cuadricula (indicada por 'x' e 'i') es mayor o igual a la ubicacion de las coordenadas y si
             //dicha ubicación es menor a las posiciones finales del tetromino (tetromino.length) y tetromino[coorYtetro].length)...
             if(i>=coorY && x>=coorX && i<coorY+tElegido.length && x<coorX+tElegido[coorYtetro].length){
