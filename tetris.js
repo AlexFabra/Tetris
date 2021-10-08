@@ -181,23 +181,49 @@ function tiempo(){
         actualizar = setInterval(tiempo,velocidad)
     }
 }
-//colisionLateral gestiona las colisiones con la pared o con otros tetrominos
+//colisionLateral gestiona las colisiones con la pared o con otros tetrominos:
 function colisionLateral(direccion){
-    let ubicacionX = coorUsuario.x*(ANCHO_ALTO_CUADRADO+DISTANCIA)
-    let ubicacionY = coorUsuario.y*(ANCHO_ALTO_CUADRADO+DISTANCIA)
-    //si las coordenadas del tetromino se ubican en el limite derecho y el usuario quiere ir a la derecha:
-    if(ubicacionX>ANCHO_LIENZO && direccion===1 && coorUsuario.x+1!==2){
-        return true
-    //si las coordenadas se ubican en el límite izquierdo y el usuario quiere ir a la izquierda:
-    } else if (ubicacionX<INICIO_ALTO_LIENZO && direccion===-1){
-        return true
-    //si las coordenadas se ubican en el fondo y el usuario quiere moverse hacia abajo:
-    } else if (ubicacionY>ALTO_LIENZO){
-        console.log("choque")
-        return true
-    } else {
-        return false
+    let coorXtetro = 0
+    let coorYtetro = 0
+    let colision = false
+
+    for(let i=0;i<ALTO_CUADRICULA;++i) {
+        for (let x = 0; x < ANCHO_CUADRICULA; x++) {
+            if (i >= coorUsuario.y && x >= coorUsuario.x && i < coorUsuario.y + tetromino.length && x < coorUsuario.x + tetromino[coorYtetro].length) {
+                switch(direccion){
+                    case 1: //si el usuario quiere ir a la derecha:
+                            /*si la coordenada eje del tetromino en la cuadrícula más la coordenada analizada del mismo es igual al ancho
+                              mientras la coordenada analizada vale 1, habrá colisión:
+                             */
+                            if (coorUsuario.x + coorXtetro + 1 === ANCHO_CUADRICULA && tetromino[coorYtetro][coorXtetro] === 1) {
+                                colision = true
+                                console.log("colision con la pared derecha")
+                            }
+                            else if(tetromino[coorYtetro][coorXtetro]===1 && cuadricula[coorUsuario.y+coorYtetro][coorUsuario.x+coorXtetro+1]===2){
+                                colision = true
+                                console.log("colision con un tetromino a la derecha")
+                            }
+                            break;
+                    case -1: //si el usuario quiere ir a la izquierda:
+                            if(coorUsuario.x + coorXtetro === 0 && tetromino[coorYtetro][coorXtetro]===1){
+                                colision = true
+                                console.log("colision con la pared izquierda")
+                            }
+                            else if(tetromino[coorYtetro][coorXtetro]===1 && cuadricula[coorUsuario.y+coorYtetro][coorUsuario.x+coorXtetro-1]===2){
+                                colision = true
+                                console.log("colision con un tetromino a la izquierda")
+                            }
+                            break;
+                }
+                coorXtetro++
+            }
+        }
+        coorXtetro=0
+        if(i>=coorUsuario.y && i<coorUsuario.y + tetromino.length){
+            coorYtetro++
+        }
     }
+    return colision
 }
 
 function colisionFinal(tetrominoElegido,coordenadaX,coordenadaY){
@@ -324,6 +350,7 @@ document.addEventListener("keydown",event => {
     }
 })
 function rotarTetromino(){
+    //-------------------------------------poner condición que dentro de su vector no haya en la cuadricula variables de valor 2
     //substituimos las posiciones entre x e y:
     for(let y=0;y<tetromino.length;++y){
         for(let x=0;x<y;++x){
