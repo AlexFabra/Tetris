@@ -4,7 +4,7 @@ const lienzo = document.querySelector("canvas")
 //poner 2d es necesario, muestra que la animación será en 2d:
 const CONTEXTO = lienzo.getContext("2d")
 //variables de medida de la zona de juego del lienzo:
-const INICIO_ALTO_LIENZO = 6
+const INICIO_ALTO_LIENZO = 0
 const INICIO_ANCHO_LIENZO = 4
 const ANCHO_LIENZO = lienzo.width-60//lienzo.style.width
 const ALTO_LIENZO = lienzo.height-20 //lienzo.style.height
@@ -22,11 +22,35 @@ let velocidad=1000
 let juegoPausado = false
 let tetromino = []
 let puntuacion = 0
-
 //coordenadas de la pieza del usuario (modificables por el usuario mediante teclado):
 var coorUsuario = {
-x:5,
+x:6,
 y:0
+}
+//crearCuadricula llena el array cuadricula de arrays (para hacerlo bidimensional) y los rellena de valores:
+function crearCuadricula(ancho,alto){
+    let cuadricula=[]
+    //con este for se llena la cuadrícula de arrays
+    for(let i=0;i<alto;++i){
+        //push pone, en cada posición del vector, un array del largo de posicionX y lo llena de valores (0):
+        cuadricula.push(new Array(ancho).fill(0))
+    }
+    return cuadricula
+}
+
+/** nuevaPieza genera un tetromino al azar y lo sitúa.
+ *  Depende de la función crearTetromino()
+ * @returns {number[][]}
+ */
+function nuevaPieza(){
+    var randomnumber = Math.floor(Math.random() * (4 + 1));
+    //se elige al azar un tetromino:
+    tetromino=crearTetromino(randomnumber)
+    //Reinicio de las coordenadas del tetrominó:
+    coorUsuario.x=6
+    coorUsuario.y=0
+    //si hay una colisión cuando la pieza sale (se pierde la partida):
+    return tetromino
 }
 function crearTetromino(tipo){
     switch(tipo){
@@ -64,27 +88,6 @@ function crearTetromino(tipo){
             ]
         }
 }
-function nuevaPieza(){
-    var randomnumber = Math.floor(Math.random() * (4 + 1));
-    //se elige al azar un tetromino:
-    tetromino=crearTetromino(randomnumber)
-    //Reinicio de las coordenadas del tetrominó:
-    coorUsuario.x=5
-    coorUsuario.y=0
-    //si hay una colisión cuando la pieza sale (se pierde la partida):
-    return tetromino
-}
-//crearCuadricula llena el array cuadricula de arrays (para hacerlo bidimensional) y los rellena de valores:
-function crearCuadricula(ancho,alto){
-    let cuadricula=[]
-    //con este for se llena la cuadrícula de arrays
-    for(let i=0;i<alto;++i){
-        //push pone, en cada posición del vector, un array del largo de posicionX y lo llena de valores (0):
-        cuadricula.push(new Array(ancho).fill(0))
-    }
-    return cuadricula
-}
-
 /** dibujar() representa los valores de la cuadricula en el lienzo, siendo 0 un valor no representado y el resto pintado
  */
 function dibujar(){
@@ -129,7 +132,6 @@ function borrarLinea(){
 }
 function actualizaPuntuacion(){
     document.getElementById("puntuacion").innerHTML = "Puntuación:<br>" + puntuacion
-    //document.puntuacion.innerHTML("x")
 }
 /**limpiarMovimiento despeja los valores '1' de la cuadrícula.
  */
@@ -196,6 +198,8 @@ function tiempo(){
         tetrominoACuadricula(tetromino,coorUsuario.x,coorUsuario.y)
         dibujar()
     } else {
+        tetrominoACuadricula(tetromino,coorUsuario.x,coorUsuario.y)
+        dibujar()
         posicionFinal(tetromino,coorUsuario.x,coorUsuario.y)
         borrarLinea()
         tetromino=nuevaPieza()
@@ -204,8 +208,15 @@ function tiempo(){
         //reiniciamos el intervalo y lo volvemos a guardar en 'actualizar'
         clearInterval(actualizar)
         actualizar = setInterval(tiempo,velocidad)
+        //comprobamos si la partida se acaba:
+        if(cuadricula[0].includes(2)){
+            console.log("tu partida ha terminado.")
+            document.getElementById("mensaje").innerHTML = "Tu partida<br>ha terminado"
+            pausa()
+        }
     }
 }
+
 //colisionLateral gestiona las colisiones con la pared o con otros tetrominos:
 function colisionLateral(direccion){
     let coorXtetro = 0
@@ -273,11 +284,11 @@ function colisionFinal(tetrominoElegido,coordenadaX,coordenadaY){
                         //si la siguiente variable tiene valor 2...
                         if (cuadricula[i + 1][x] === 2) {
                             colision = true;
-                            console.log("choca contra tetromino")
+                            console.log("colisión con un tetromino abajo")
                         }
                     }
                     if(i+1===ALTO_CUADRICULA) {
-                        console.log("toca el suelo")
+                        console.log("colisión con el suelo")
                         colision = true
                     }
                 }
@@ -324,6 +335,10 @@ function posicionFinal(tetrominoElegido,coordenadaX,coordenadaY){
         }
     }
 }
+
+/** accionJugador gestiona la función que debe llamarse según el movimiento del jugador:
+ * @param direccion int movimiento del jugador. Derecha === 1, izquierda === -1, abajo === 0.
+ */
 function accionJugador(direccion){
     if(direccion===1){ //se mueve a la derecha:
         coorUsuario.x += 1
@@ -347,7 +362,6 @@ function accionJugador(direccion){
 document.addEventListener("keydown",event => {
     let direccion=0
     teclaPresionada=event.key
-    console.log(teclaPresionada)
     if(!juegoPausado){
         //si se pulsa la flecha abajo:
         if(teclaPresionada==="s"){
@@ -377,7 +391,6 @@ document.addEventListener("keydown",event => {
     }
 })
 function rotarTetromino(){
-    //-------------------------------------poner condición que dentro de su vector no haya en la cuadricula variables de valor 2
     //substituimos las posiciones entre x e y:
     for(let y=0;y<tetromino.length;++y){
         for(let x=0;x<y;++x){
@@ -388,12 +401,8 @@ function rotarTetromino(){
     tetromino.forEach(row => row.reverse())
 }
 
-crearCuadricula()
-tetromino=nuevaPieza()
-tetrominoACuadricula(tetromino,coorUsuario.x,coorUsuario.y)
-dibujar()
-actualizaPuntuacion()
-
+/** reinicio devuelve las variables al estado inicial:
+ */
 function reinicio(){
     //ponemos los valores de la cuadricula a '0'
     limpiarCuadricula()
@@ -406,9 +415,13 @@ function reinicio(){
     //pintamos la cuadricula según sus valores:
     dibujar()
     // falta reiniciar la puntuación
+    puntuacion=0
+    document.getElementById("puntuacion").innerHTML = "Puntuación:<br>" + puntuacion
+    document.getElementById("mensaje").innerHTML = "<br>"
 }
-//limpiarCuadricula reinicia los valores de los vectores de la Cuadricula
-//dándoles el valor por defecto ('0')
+/** limpiarCuadricula reinicia los valores de los vectores de la Cuadricula
+ *  dándoles el valor por defecto ('0')
+ */
 function limpiarCuadricula(){
     cuadricula.forEach((fila,)=>{
         fila.forEach((valor,x)=>{
@@ -416,19 +429,28 @@ function limpiarCuadricula(){
         })
     })
 }
+
+/** pausa detiene el juego.
+ */
 function pausa(){
     clearInterval(actualizar)
     juegoPausado=true
 }
+
+/** seguir reanuda el juego.
+ */
 function seguir(){
     if(juegoPausado){
         juegoPausado=false
         actualizar=setInterval(tiempo,velocidad)
+    }
 }
-}
-//tetrominoACuadricula(tetromino,coorUsuario.x,coorUsuario.ytetromino,coorUsuario.x,coorUsuario.y)
+/** actualizar llama a tiempo con un ritmo marcado por el valor de la variable velocidad
+ */
 var actualizar = setInterval(tiempo,velocidad)
 
+/** cambioColor cambia el color de los tetrominós
+ */
 function cambioColor(){
     var p1 = Math.floor(Math.random() * (255 + 1));
     var p2 = Math.floor(Math.random() * (255 + 1));
@@ -452,7 +474,11 @@ function cambioColor(){
 //contexto.fillStyle=pat
 //contexto.fill()
 
-
+crearCuadricula()
+tetromino=nuevaPieza()
+tetrominoACuadricula(tetromino,coorUsuario.x,coorUsuario.y)
+dibujar()
+actualizaPuntuacion()
 
 
 
