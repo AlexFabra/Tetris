@@ -21,6 +21,7 @@ let velocidad=1000
 //indicador de la pausa del juego:
 let juegoPausado = false
 let tetromino = []
+let puntuacion = 0
 
 //coordenadas de la pieza del usuario (modificables por el usuario mediante teclado):
 var coorUsuario = {
@@ -106,6 +107,30 @@ function dibujar(){
     }
 }
 
+/** borrarLinea reinicia los arrays de cuadricula que tiene todas las variables con valor===2
+ */
+function borrarLinea(){
+    let fila=0
+    for(let i=0;i<ALTO_CUADRICULA;++i) {
+        for (let x = 0; x < ANCHO_CUADRICULA; x++) {
+            if(cuadricula[i][x]===2){
+                fila+=1
+            }
+        }
+        if(fila===ANCHO_CUADRICULA){
+            console.log("fila llena")
+            cuadricula.unshift(cuadricula.splice(i,1)[0].fill(0))
+            puntuacion+=10
+            actualizaPuntuacion()
+            console.log("puntos: "+puntuacion)
+        }
+        fila=0;
+    }
+}
+function actualizaPuntuacion(){
+    document.getElementById("puntuacion").innerHTML = "Puntuación:<br>" + puntuacion
+    //document.puntuacion.innerHTML("x")
+}
 /**limpiarMovimiento despeja los valores '1' de la cuadrícula.
  */
 function limpiarMovimiento(){
@@ -144,7 +169,6 @@ function tetrominoACuadricula(tetrominoElegido,coordenadaX,coordenadaY) {
              * otra condición serà que el tetrominó esté dentro de la cuadrícula
              */
             if (tetrominoElegido[counterY][counterX] !== 0) {
-                console.log(coordenadaY + tetrominoElegido.length)
                 if(coordenadaY + tetrominoElegido.length > cuadricula.length){
                     console.log("el vector del tetrominó (no el tetrominó) está tocando el suelo.")
                     cuadricula[i][j] = 1
@@ -173,6 +197,7 @@ function tiempo(){
         dibujar()
     } else {
         posicionFinal(tetromino,coorUsuario.x,coorUsuario.y)
+        borrarLinea()
         tetromino=nuevaPieza()
         //aumentamos la velocidad del juego:
         velocidad=velocidad*0.9
@@ -321,15 +346,17 @@ function accionJugador(direccion){
 //controles
 document.addEventListener("keydown",event => {
     let direccion=0
+    teclaPresionada=event.key
+    console.log(teclaPresionada)
     if(!juegoPausado){
         //si se pulsa la flecha abajo:
-        if(event.keyCode===40){
+        if(teclaPresionada==="s"){
             if(!colisionLateral(direccion)){
                 accionJugador(direccion)
             }
         }
         //si se pulsa la izquierda:
-        else if(event.keyCode===37){
+        else if(teclaPresionada==="a"){
             direccion=-1
             //colisiónLateral analiza, antes de permitir el movimiento lateral del jugador, que sea posible
             //sin salirse del canvas (si no hay colisión lateral, se permitirá el movimiento):
@@ -338,13 +365,13 @@ document.addEventListener("keydown",event => {
             }
         }
         //si se pulsa la derecha:
-        else if(event.keyCode===39){
+        else if(teclaPresionada==="d"){
             direccion=1
             if(!colisionLateral(direccion)){
                 accionJugador(direccion)
             }
         }
-        else if(event.keyCode===32){
+        else if(teclaPresionada==="q"){
             rotarTetromino()
         }
     }
@@ -365,6 +392,7 @@ crearCuadricula()
 tetromino=nuevaPieza()
 tetrominoACuadricula(tetromino,coorUsuario.x,coorUsuario.y)
 dibujar()
+actualizaPuntuacion()
 
 function reinicio(){
     //ponemos los valores de la cuadricula a '0'

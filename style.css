@@ -10,6 +10,8 @@ body {
 }
 .body{
 display:flex;
+    justify-content: center;
+    align-items: center;
 }
 .title{
     font-weight:bold;
@@ -17,9 +19,8 @@ display:flex;
     margin: auto;
     padding: 0;
     display:block;
-    text-align:left;
-    float:left
-    */
+    text-align:center;
+    float:top;
 }
 .posicion1{
 /*margin-left:50px;
@@ -36,7 +37,6 @@ background-color: orange;
     margin: auto;
     /*display: block;*/
     position: relative;
-    float:center
     top: 0;
     bottom: 0;
     left: 0;
@@ -70,4 +70,30 @@ background-color: orange;
 }
 .boton {
   top: 2px;
+}
+.boton2 {
+    min-width: 130px;
+    height: 40px;
+    color: #fff;
+    padding: 5px 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+    outline: none;
+    border-radius: 5px;
+    border: none;
+    background-size: 120% auto;
+    background-image: linear-gradient(315deg,#dd4a3a 0%,#832db5 50%, #acb445);
+}
+.boton2 {
+    background-position: right center;
+}
+.boton2 {
+    top: 2px;
+}
+.creditos {
+    float:bottom;
+    text-align:justify;
 }
